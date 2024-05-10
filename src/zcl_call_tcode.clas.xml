@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_CALL_TCODE</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>Call Transactions</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CMPNAME>ACC_DOC_POPUP</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>List of Documents in Accounting pop up</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>CALL_TRANSACTION</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Call Transaction</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>CREATE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Create instance</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>FB03</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Account Document</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>FK03</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Vendor</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>J1B3N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Nota Fiscal</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>KE23N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>CO-PA Line Item Display</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>LT21</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Transfer Order</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>ME23N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Purchase Order</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MIR4</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>MM Invoice</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_ACCOUNTING1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs accounting1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_BASICDATA1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs Basic Data 1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_CLASSIFICATION</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs Classification</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_COSTING1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs costing1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_GEN_PLANT_DATA_STORAGE1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs general plant data storage 1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_MRP1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs MRP 1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_PURCHASING</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs purchasing</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_SALESORGDATA1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs salesorgdata1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>MM03_WAREHOUSE_MANAGEMENT1</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Material, Tabs warehouse management1</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VA03</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Sales Order</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VA43</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Sales Contract</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VF03</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Sales Billing Document</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VL03N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Outbound Delivery</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>VL33N</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Inbound Delivery</DESCRIPT>
+    </SEOCOMPOTX>
+    <SEOCOMPOTX>
+     <CMPNAME>XD03</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Display Customer</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>
