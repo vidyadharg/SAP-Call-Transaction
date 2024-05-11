@@ -7,7 +7,8 @@ CLASS zcl_call_tcode DEFINITION
     "! <p class="shorttext synchronized" lang="en">Create instance</p>
     CLASS-METHODS create
       RETURNING
-        VALUE(r_call_tcode) TYPE REF TO zcl_call_tcode .
+        VALUE(r_call_tcode) TYPE REF TO zcl_call_tcode.
+
     METHODS:
       "! <p class="shorttext synchronized" lang="en">Display Sales Contract</p>
       va43
@@ -40,9 +41,9 @@ CLASS zcl_call_tcode DEFINITION
       "! <p class="shorttext synchronized" lang="en">Display Account Document</p>
       fb03
         IMPORTING
-          i_bukrs TYPE bukrs
-          i_belnr TYPE belnr_d
-          i_gjahr TYPE gjahr,
+          company_code       TYPE bukrs
+          fi_document_number TYPE belnr_d
+          fiscal_year        TYPE gjahr,
 
       "! <p class="shorttext synchronized" lang="en">Display Nota Fiscal</p>
       j1b3n
@@ -52,19 +53,19 @@ CLASS zcl_call_tcode DEFINITION
       "! <p class="shorttext synchronized" lang="en">List of Documents in Accounting pop up</p>
       acc_doc_popup
         IMPORTING
-          i_awtyp TYPE acchd-awtyp
-          i_awref TYPE acchd-awref
-          i_aworg TYPE acchd-aworg
-          i_bukrs TYPE accit-bukrs,
+          reference_procedure TYPE acchd-awtyp
+          ref_doc_number      TYPE acchd-awref
+          ref_organisation    TYPE acchd-aworg
+          company_code        TYPE accit-bukrs,
 
       "! <p class="shorttext synchronized" lang="en">CO-PA Line Item Display</p>
       ke23n
         IMPORTING
-          docnr_fi TYPE acc_docnr
-          bukrs    TYPE bukrs
-          awtyp    TYPE acchd-awtyp
-          awref    TYPE acchd-awref
-          aworg    TYPE acchd-aworg,
+          fi_document_number  TYPE acc_docnr
+          company_code        TYPE bukrs
+          reference_procedure TYPE acchd-awtyp
+          ref_doc_number      TYPE acchd-awref
+          ref_organisation    TYPE acchd-aworg,
 
       "! <p class="shorttext synchronized" lang="en">Display Outbound Delivery</p>
       vl03n
@@ -168,10 +169,10 @@ CLASS zcl_call_tcode IMPLEMENTATION.
 
     CALL FUNCTION 'COPA_DOCUMENT_RECORD'
       EXPORTING
-        i_awtyp        = i_awtyp           " Reference Category of Callup Application
-        i_awref        = i_awref           " Reference Key of Callup Application
-        i_aworg        = i_aworg           " Reference Organization of Callup Application
-        i_bukrs        = i_bukrs           " Limit to Documents of Company Code
+        i_awtyp        = reference_procedure           " Reference Category of Callup Application
+        i_awref        = ref_doc_number           " Reference Key of Callup Application
+        i_aworg        = ref_organisation           " Reference Organization of Callup Application
+        i_bukrs        = company_code           " Limit to Documents of Company Code
       TABLES
         t_documents    = lt_documents              " Table of Selected Documents
       EXCEPTIONS
@@ -182,10 +183,10 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     IF sy-subrc = 0.
       CALL FUNCTION 'AC_DOCUMENT_RECORD'
         EXPORTING
-          i_awtyp      = i_awtyp
-          i_awref      = i_awref
-          i_aworg      = i_aworg
-          i_bukrs      = i_bukrs
+          i_awtyp      = reference_procedure
+          i_awref      = ref_doc_number
+          i_aworg      = ref_organisation
+          i_bukrs      = company_code
 *        TABLES
 *         t_documents  = lt_documents              " Table of Selected Documents
         EXCEPTIONS
@@ -210,28 +211,23 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD fb03.
-
-    IF i_belnr IS NOT INITIAL AND i_bukrs IS NOT INITIAL.
-      SET PARAMETER ID 'BLN' FIELD i_belnr.
-      SET PARAMETER ID 'BUK' FIELD i_bukrs.
-      SET PARAMETER ID 'GJR' FIELD i_gjahr.
-
+    IF fi_document_number IS NOT INITIAL AND company_code IS NOT INITIAL.
+      SET PARAMETER ID 'BLN' FIELD fi_document_number.
+      SET PARAMETER ID 'BUK' FIELD company_code.
+      SET PARAMETER ID 'GJR' FIELD fiscal_year.
       call_transaction( 'FB03' ).
     ENDIF.
   ENDMETHOD.
 
   METHOD fk03.
-
     IF vendor_number IS NOT INITIAL.
       SET PARAMETER: ID 'LIF' FIELD vendor_number,
                      ID 'BUK' FIELD company_code.
-
       call_transaction( 'FK03' ).
     ENDIF.
   ENDMETHOD.
 
   METHOD j1b3n.
-
     IF nota_fiscal_docno NE 0.
       SET PARAMETER ID 'JEF' FIELD nota_fiscal_docno.
       call_transaction( 'J1B3N' ).
@@ -239,22 +235,21 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD ke23n.
-
     DATA t_documents TYPE STANDARD TABLE OF acc_doc.
 
     t_documents =
       VALUE #( (
-        docnr =  docnr_fi
+        docnr =  fi_document_number
         awtyp = 'COPA'
         display = 'X'
-        bukrs = bukrs ) ).
+        bukrs = company_code ) ).
 
     CALL FUNCTION 'COPA_DOCUMENT_RECORD'
       EXPORTING
-        i_awtyp        = awtyp  " Reference Category of Callup Application
-        i_awref        = awref  " Reference Key of Callup Application
-        i_aworg        = aworg  " Reference Organization of Callup Application
-        i_bukrs        = bukrs  " Limit to Documents of Company Code
+        i_awtyp        = reference_procedure  " Reference Category of Callup Application
+        i_awref        = ref_doc_number  " Reference Key of Callup Application
+        i_aworg        = ref_organisation  " Reference Organization of Callup Application
+        i_bukrs        = company_code  " Limit to Documents of Company Code
       TABLES
         t_documents    = t_documents  " Table of Selected Documents
       EXCEPTIONS
@@ -269,7 +264,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD va03.
-
     IF sales_contract IS NOT INITIAL.
       SET PARAMETER ID 'AUN' FIELD sales_contract.
       call_transaction( 'VA03' ).
@@ -277,7 +271,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD va43.
-
     IF sales_contract  IS NOT INITIAL.
       SET PARAMETER ID 'KTN' FIELD sales_contract .
       call_transaction( 'VA43' ).
@@ -285,7 +278,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD vf03.
-
     IF billing_document IS NOT INITIAL.
       SET PARAMETER ID 'VF' FIELD billing_document.
       call_transaction( 'VF03' ).
@@ -293,7 +285,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD xd03.
-
     IF customer_number IS NOT INITIAL.
       SET PARAMETER: ID 'KUN' FIELD customer_number,
                      ID 'BUK' FIELD company_code,
