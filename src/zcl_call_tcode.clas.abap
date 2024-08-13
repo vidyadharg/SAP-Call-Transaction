@@ -152,7 +152,7 @@ CLASS zcl_call_tcode DEFINITION
 
       "! <p class="shorttext synchronized" lang="en">IDOC Display</p>
       idoc_disp
-        IMPORTING 
+        IMPORTING
           idocnum type EDI_DOCNUM.
 
   PROTECTED SECTION.
