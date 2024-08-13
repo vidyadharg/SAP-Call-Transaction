@@ -148,7 +148,12 @@ CLASS zcl_call_tcode DEFINITION
       mm03_costing1
         IMPORTING
           material_code TYPE mara-matnr
-          plant         TYPE marc-werks.
+          plant         TYPE marc-werks,
+
+      "! <p class="shorttext synchronized" lang="en">IDOC Display</p>
+      idoc_disp
+        IMPORTING 
+          idocnum type EDI_DOCNUM.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -414,6 +419,12 @@ CLASS zcl_call_tcode IMPLEMENTATION.
       SET PARAMETER ID 'MXX' FIELD 'G' .
       call_transaction( 'MM03' ).
     ENDIF.
+  ENDMETHOD.
+
+  METHOD idoc_disp.
+    check idocnum is not initial.
+    submit idoc_tree_control with docnum = idocnum
+              and return.
   ENDMETHOD.
 
 ENDCLASS.
