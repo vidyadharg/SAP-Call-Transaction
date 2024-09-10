@@ -8,48 +8,40 @@ CLASS zcl_call_tcode DEFINITION
     CLASS-METHODS create
       RETURNING
         VALUE(r_call_tcode) TYPE REF TO zcl_call_tcode.
-
     METHODS:
       "! <p class="shorttext synchronized" lang="en">Display Sales Contract</p>
       va43
         IMPORTING
           sales_contract TYPE vbak-vbeln,
-
       "! <p class="shorttext synchronized" lang="en">Sales Billing Document</p>
       vf03
         IMPORTING
           billing_document TYPE vbrk-vbeln,
-
       "! <p class="shorttext synchronized" lang="en">Display Sales Order</p>
       va03
         IMPORTING
           sales_contract TYPE vbrk-vbeln,
-
       "! <p class="shorttext synchronized" lang="en">Display Customer</p>
       xd03
         IMPORTING
           customer_number TYPE kunnr
           company_code    TYPE bukrs OPTIONAL
           sales_org       TYPE vkorg OPTIONAL,
-
       "! <p class="shorttext synchronized" lang="en">Display Vendor</p>
       fk03
         IMPORTING
           vendor_number TYPE lifnr
           company_code  TYPE bukrs OPTIONAL,
-
       "! <p class="shorttext synchronized" lang="en">Display Account Document</p>
       fb03
         IMPORTING
           company_code       TYPE bukrs
           fi_document_number TYPE belnr_d
           fiscal_year        TYPE gjahr,
-
       "! <p class="shorttext synchronized" lang="en">Display Nota Fiscal</p>
       j1b3n
         IMPORTING
           nota_fiscal_docno TYPE j_1bdocnum,
-
       "! <p class="shorttext synchronized" lang="en">List of Documents in Accounting pop up</p>
       acc_doc_popup
         IMPORTING
@@ -57,7 +49,6 @@ CLASS zcl_call_tcode DEFINITION
           ref_doc_number      TYPE acchd-awref
           ref_organisation    TYPE acchd-aworg
           company_code        TYPE accit-bukrs,
-
       "! <p class="shorttext synchronized" lang="en">CO-PA Line Item Display</p>
       ke23n
         IMPORTING
@@ -66,94 +57,79 @@ CLASS zcl_call_tcode DEFINITION
           reference_procedure TYPE acchd-awtyp
           ref_doc_number      TYPE acchd-awref
           ref_organisation    TYPE acchd-aworg,
-
       "! <p class="shorttext synchronized" lang="en">Display Outbound Delivery</p>
       vl03n
         IMPORTING
           outbound_delivery TYPE likp-vbeln,
-
       "! <p class="shorttext synchronized" lang="en">Display Inbound Delivery</p>
       vl33n
         IMPORTING
           inbound_delivery TYPE likp-vbeln,
-
       "! <p class="shorttext synchronized" lang="en">Transfer Order</p>
       lt21
         IMPORTING
           transfer_order      TYPE ltak-tanum
           warehouse           TYPE ltak-lgnum
           transfer_order_line TYPE rl03t-tapos,
-
       "! <p class="shorttext synchronized" lang="en">MM Invoice</p>
       mir4
         IMPORTING
           invoice_no  TYPE rbkp-belnr
           fiscal_year TYPE rbkp-gjahr,
-
       "! <p class="shorttext synchronized" lang="en">Display Purchase Order</p>
       me23n
         IMPORTING
           purchase_order TYPE ekko-ebeln,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs Basic Data 1</p>
       mm03_basicdata1
         IMPORTING
           material_code TYPE mara-matnr,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs Classification</p>
       mm03_classification
         IMPORTING
           material_code TYPE mara-matnr,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs salesorgdata1</p>
       mm03_salesorgdata1
         IMPORTING
           material_code TYPE mara-matnr
           sales_org     TYPE mvke-vkorg
           dist_chanl    TYPE mvke-vtweg,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs purchasing</p>
       mm03_purchasing
         IMPORTING
           material_code TYPE mara-matnr
           plant         TYPE marc-werks,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs MRP 1</p>
       mm03_mrp1
         IMPORTING
           material_code TYPE mara-matnr
           storg_loc     TYPE mard-lgort,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs general plant data storage 1 </p>
       mm03_gen_plant_data_storage1
         IMPORTING
           material_code TYPE mara-matnr
           plant         TYPE marc-werks
           storg_loc     TYPE mard-lgort,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs warehouse management1</p>
       mm03_warehouse_management1
         IMPORTING
           material_code TYPE mara-matnr
           plant         TYPE marc-werks
           warehouse     TYPE mlgn-lgnum,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs accounting1</p>
       mm03_accounting1
         IMPORTING
           material_code TYPE mara-matnr
           plant         TYPE marc-werks,
-
       "! <p class="shorttext synchronized" lang="en">Material, Tabs costing1</p>
       mm03_costing1
         IMPORTING
           material_code TYPE mara-matnr
           plant         TYPE marc-werks,
-
       "! <p class="shorttext synchronized" lang="en">IDOC Display</p>
       idoc_disp
         IMPORTING
-          idocnum TYPE EDI_DOCNUM.
+          idocnum TYPE edi_docnum.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
