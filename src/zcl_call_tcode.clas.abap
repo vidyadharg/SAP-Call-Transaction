@@ -129,7 +129,11 @@ CLASS zcl_call_tcode DEFINITION
       "! <p class="shorttext synchronized" lang="en">IDOC Display</p>
       idoc_disp
         IMPORTING
-          idocnum TYPE edi_docnum.
+          idocnum TYPE edi_docnum,
+      "! <p class="shorttext synchronized" lang="en">Display HR Master Data</p>
+      pa20
+        IMPORTING
+          HR_Master_key type pskey.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -398,9 +402,27 @@ CLASS zcl_call_tcode IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD idoc_disp.
-    check idocnum is not initial.
-    submit idoc_tree_control with docnum = idocnum
-              and return.
+    CHECK idocnum IS NOT INITIAL.
+    SUBMIT idoc_tree_control WITH docnum = idocnum
+              AND RETURN.
   ENDMETHOD.
 
+  METHOD pa20.
+    IF HR_Master_key-pernr IS NOT INITIAL.
+      SET PARAMETER ID 'PER' FIELD HR_Master_key-pernr.
+      SET PARAMETER ID 'BEG' FIELD HR_Master_key-begda.
+      SET PARAMETER ID 'END' FIELD HR_Master_key-endda.
+      SET PARAMETER ID 'INF' FIELD HR_Master_key-infty.
+      SET PARAMETER ID 'ITP' FIELD HR_Master_key-infty.
+      SET PARAMETER ID 'SUB' FIELD HR_Master_key-subty.
+      SET PARAMETER ID 'FCD' FIELD 'DIS '.
+      SET PARAMETER ID 'OPS' FIELD HR_Master_key-objps.
+      SET PARAMETER ID 'SPP' FIELD HR_Master_key-sprps.
+      SET PARAMETER ID 'PSQ' FIELD HR_Master_key-seqnr.
+      "SET PARAMETER ID 'PAK' FIELD askey.
+
+      call_transaction( 'PA20' ).
+    ENDIF.
+
+  ENDMETHOD..
 ENDCLASS.
