@@ -130,10 +130,25 @@ CLASS zcl_call_tcode DEFINITION
       idoc_disp
         IMPORTING
           idocnum TYPE edi_docnum,
+      "! <p class="shorttext synchronized" lang="en">IDOC Display ALV</p>
+      idoc_disp_alv
+        IMPORTING
+          idocnum    TYPE edi_docnum
+          changeable TYPE abap_bool  DEFAULT abap_false,
       "! <p class="shorttext synchronized" lang="en">Display HR Master Data</p>
       pa20
         IMPORTING
-          HR_Master_key type pskey.
+          hr_master_key TYPE pskey,
+
+      "! <p class="shorttext synchronized" lang="en">Display Email </p>
+      email_disp
+        IMPORTING
+          sndreq_guid TYPE os_guid,
+
+      "! <p class="shorttext synchronized" lang="en">Display SPOOL Request</p>
+      spool_disp
+        IMPORTING
+          spool_no TYPE rspoid.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -148,6 +163,7 @@ ENDCLASS.
 
 
 CLASS zcl_call_tcode IMPLEMENTATION.
+
 
   METHOD acc_doc_popup.
     DATA lt_documents TYPE STANDARD TABLE OF acc_doc.
@@ -183,6 +199,7 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD call_transaction.
     TRY.
         CALL TRANSACTION tcode WITH AUTHORITY-CHECK AND SKIP FIRST SCREEN.
@@ -191,9 +208,11 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 
+
   METHOD create.
     r_call_tcode = NEW zcl_call_tcode( ).
   ENDMETHOD.
+
 
   METHOD fb03.
     IF fi_document_number IS NOT INITIAL AND company_code IS NOT INITIAL.
@@ -204,6 +223,7 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD fk03.
     IF vendor_number IS NOT INITIAL.
       SET PARAMETER: ID 'LIF' FIELD vendor_number,
@@ -212,12 +232,44 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
+  METHOD idoc_disp.
+    CHECK idocnum IS NOT INITIAL.
+    SUBMIT idoc_tree_control WITH docnum = idocnum
+              AND RETURN.
+  ENDMETHOD.
+
+
+  METHOD idoc_disp_alv.
+    DATA lx_error TYPE REF TO cx_wzre_error.
+    CHECK idocnum IS NOT INITIAL.
+
+    TRY.
+        cl_wlf_idoc_editor=>get_editor( )->start( EXPORTING i_idoc_number = idocnum
+                                                            i_changeable  = changeable ).
+      CATCH cx_wzre_does_not_exist
+            cx_wzre_no_authority
+            cx_wzre_general_error INTO lx_error.
+        lx_error->a_protocol->get_messages( IMPORTING et_message = DATA(lt_message) ).
+
+        DATA(ls_message) = VALUE #( lt_message[ 1 ] OPTIONAL ).
+
+        IF ls_message IS NOT INITIAL.
+          MESSAGE ID ls_message-msgid TYPE 'S' NUMBER ls_message-msgno
+                  WITH ls_message-msgv1 ls_message-msgv2
+                       ls_message-msgv3 ls_message-msgv4.
+        ENDIF.
+    ENDTRY.
+  ENDMETHOD.
+
+
   METHOD j1b3n.
     IF nota_fiscal_docno NE 0.
       SET PARAMETER ID 'JEF' FIELD nota_fiscal_docno.
       call_transaction( 'J1B3N' ).
     ENDIF.
   ENDMETHOD.
+
 
   METHOD ke23n.
     DATA t_documents TYPE STANDARD TABLE OF acc_doc.
@@ -248,49 +300,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD va03.
-    IF sales_contract IS NOT INITIAL.
-      SET PARAMETER ID 'AUN' FIELD sales_contract.
-      call_transaction( 'VA03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD va43.
-    IF sales_contract  IS NOT INITIAL.
-      SET PARAMETER ID 'KTN' FIELD sales_contract .
-      call_transaction( 'VA43' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD vf03.
-    IF billing_document IS NOT INITIAL.
-      SET PARAMETER ID 'VF' FIELD billing_document.
-      call_transaction( 'VF03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD xd03.
-    IF customer_number IS NOT INITIAL.
-      SET PARAMETER: ID 'KUN' FIELD customer_number,
-                     ID 'BUK' FIELD company_code,
-                     ID 'VKO' FIELD sales_org.
-      call_transaction( 'XD03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD vl03n.
-    IF outbound_delivery IS NOT INITIAL.
-      SET PARAMETER ID 'VL' FIELD outbound_delivery.
-      call_transaction( 'VL03N' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD vl33n.
-    IF inbound_delivery IS NOT INITIAL.
-      SET PARAMETER ID 'VLM' FIELD inbound_delivery.
-      call_transaction( 'VL33N' ).
-    ENDIF.
-  ENDMETHOD.
 
   METHOD lt21.
     IF transfer_order IS NOT INITIAL.
@@ -301,13 +310,6 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD mir4.
-    IF invoice_no IS NOT INITIAL.
-      SET PARAMETER ID 'RBN' FIELD invoice_no.
-      SET PARAMETER ID 'GJR' FIELD fiscal_year.
-      call_transaction( 'MIR4' ).
-    ENDIF.
-  ENDMETHOD.
 
   METHOD me23n.
     "Purchase Order
@@ -316,6 +318,26 @@ CLASS zcl_call_tcode IMPLEMENTATION.
       call_transaction( 'ME23N'  ).
     ENDIF.
   ENDMETHOD.
+
+
+  METHOD mir4.
+    IF invoice_no IS NOT INITIAL.
+      SET PARAMETER ID 'RBN' FIELD invoice_no.
+      SET PARAMETER ID 'GJR' FIELD fiscal_year.
+      call_transaction( 'MIR4' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD mm03_accounting1.
+    IF material_code IS NOT INITIAL.
+      SET PARAMETER ID 'MAT' FIELD material_code .
+      SET PARAMETER ID 'WRK' FIELD plant .
+      SET PARAMETER ID 'MXX' FIELD 'B' .
+      call_transaction( 'MM03' ).
+    ENDIF.
+  ENDMETHOD.
+
 
   METHOD mm03_basicdata1.
     "Material BasicData1
@@ -326,6 +348,7 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
   METHOD mm03_classification.
     "Material Classification
     IF material_code IS NOT INITIAL.
@@ -335,33 +358,16 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD mm03_salesorgdata1.
+
+  METHOD mm03_costing1.
     IF material_code IS NOT INITIAL.
       SET PARAMETER ID 'MAT' FIELD material_code .
-      SET PARAMETER ID 'VKO' FIELD sales_org .
-      SET PARAMETER ID 'VTW' FIELD dist_chanl .
-      SET PARAMETER ID 'MXX' FIELD 'V' .
+      SET PARAMETER ID 'WRK' FIELD plant.
+      SET PARAMETER ID 'MXX' FIELD 'G' .
       call_transaction( 'MM03' ).
     ENDIF.
   ENDMETHOD.
 
-  METHOD mm03_purchasing.
-    IF material_code IS NOT INITIAL.
-      SET PARAMETER ID 'MAT' FIELD material_code .
-      SET PARAMETER ID 'WRK' FIELD plant .
-      SET PARAMETER ID 'MXX' FIELD 'E' .
-      call_transaction( 'MM03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD mm03_mrp1.
-    IF material_code IS NOT INITIAL.
-      SET PARAMETER ID 'MAT' FIELD material_code .
-      SET PARAMETER ID 'LAG' FIELD storg_loc .
-      SET PARAMETER ID 'MXX' FIELD 'D' .
-      call_transaction( 'MM03' ).
-    ENDIF.
-  ENDMETHOD.
 
   METHOD mm03_gen_plant_data_storage1.
     IF material_code IS NOT INITIAL.
@@ -373,6 +379,38 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+
+  METHOD mm03_mrp1.
+    IF material_code IS NOT INITIAL.
+      SET PARAMETER ID 'MAT' FIELD material_code .
+      SET PARAMETER ID 'LAG' FIELD storg_loc .
+      SET PARAMETER ID 'MXX' FIELD 'D' .
+      call_transaction( 'MM03' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD mm03_purchasing.
+    IF material_code IS NOT INITIAL.
+      SET PARAMETER ID 'MAT' FIELD material_code .
+      SET PARAMETER ID 'WRK' FIELD plant .
+      SET PARAMETER ID 'MXX' FIELD 'E' .
+      call_transaction( 'MM03' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD mm03_salesorgdata1.
+    IF material_code IS NOT INITIAL.
+      SET PARAMETER ID 'MAT' FIELD material_code .
+      SET PARAMETER ID 'VKO' FIELD sales_org .
+      SET PARAMETER ID 'VTW' FIELD dist_chanl .
+      SET PARAMETER ID 'MXX' FIELD 'V' .
+      call_transaction( 'MM03' ).
+    ENDIF.
+  ENDMETHOD.
+
+
   METHOD mm03_warehouse_management1.
     IF material_code IS NOT INITIAL.
       SET PARAMETER ID 'MAT' FIELD material_code .
@@ -383,46 +421,109 @@ CLASS zcl_call_tcode IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD mm03_accounting1.
-    IF material_code IS NOT INITIAL.
-      SET PARAMETER ID 'MAT' FIELD material_code .
-      SET PARAMETER ID 'WRK' FIELD plant .
-      SET PARAMETER ID 'MXX' FIELD 'B' .
-      call_transaction( 'MM03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD mm03_costing1.
-    IF material_code IS NOT INITIAL.
-      SET PARAMETER ID 'MAT' FIELD material_code .
-      SET PARAMETER ID 'WRK' FIELD plant.
-      SET PARAMETER ID 'MXX' FIELD 'G' .
-      call_transaction( 'MM03' ).
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD idoc_disp.
-    CHECK idocnum IS NOT INITIAL.
-    SUBMIT idoc_tree_control WITH docnum = idocnum
-              AND RETURN.
-  ENDMETHOD.
 
   METHOD pa20.
-    IF HR_Master_key-pernr IS NOT INITIAL.
-      SET PARAMETER ID 'PER' FIELD HR_Master_key-pernr.
-      SET PARAMETER ID 'BEG' FIELD HR_Master_key-begda.
-      SET PARAMETER ID 'END' FIELD HR_Master_key-endda.
-      SET PARAMETER ID 'INF' FIELD HR_Master_key-infty.
-      SET PARAMETER ID 'ITP' FIELD HR_Master_key-infty.
-      SET PARAMETER ID 'SUB' FIELD HR_Master_key-subty.
+    IF hr_master_key-pernr IS NOT INITIAL.
+      SET PARAMETER ID 'PER' FIELD hr_master_key-pernr.
+      SET PARAMETER ID 'BEG' FIELD hr_master_key-begda.
+      SET PARAMETER ID 'END' FIELD hr_master_key-endda.
+      SET PARAMETER ID 'INF' FIELD hr_master_key-infty.
+      SET PARAMETER ID 'ITP' FIELD hr_master_key-infty.
+      SET PARAMETER ID 'SUB' FIELD hr_master_key-subty.
       SET PARAMETER ID 'FCD' FIELD 'DIS '.
-      SET PARAMETER ID 'OPS' FIELD HR_Master_key-objps.
-      SET PARAMETER ID 'SPP' FIELD HR_Master_key-sprps.
-      SET PARAMETER ID 'PSQ' FIELD HR_Master_key-seqnr.
+      SET PARAMETER ID 'OPS' FIELD hr_master_key-objps.
+      SET PARAMETER ID 'SPP' FIELD hr_master_key-sprps.
+      SET PARAMETER ID 'PSQ' FIELD hr_master_key-seqnr.
       "SET PARAMETER ID 'PAK' FIELD askey.
 
       call_transaction( 'PA20' ).
     ENDIF.
 
-  ENDMETHOD..
+  ENDMETHOD.
+
+
+  METHOD va03.
+    IF sales_contract IS NOT INITIAL.
+      SET PARAMETER ID 'AUN' FIELD sales_contract.
+      call_transaction( 'VA03' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD va43.
+    IF sales_contract  IS NOT INITIAL.
+      SET PARAMETER ID 'KTN' FIELD sales_contract .
+      call_transaction( 'VA43' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD vf03.
+    IF billing_document IS NOT INITIAL.
+      SET PARAMETER ID 'VF' FIELD billing_document.
+      call_transaction( 'VF03' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD vl03n.
+    IF outbound_delivery IS NOT INITIAL.
+      SET PARAMETER ID 'VL' FIELD outbound_delivery.
+      call_transaction( 'VL03N' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD vl33n.
+    IF inbound_delivery IS NOT INITIAL.
+      SET PARAMETER ID 'VLM' FIELD inbound_delivery.
+      call_transaction( 'VL33N' ).
+    ENDIF.
+  ENDMETHOD.
+
+
+  METHOD xd03.
+    IF customer_number IS NOT INITIAL.
+      SET PARAMETER: ID 'KUN' FIELD customer_number,
+                     ID 'BUK' FIELD company_code,
+                     ID 'VKO' FIELD sales_org.
+      call_transaction( 'XD03' ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD email_disp.
+
+    DATA lt_sndrecs TYPE soxsp2tab.
+
+    SELECT * FROM soos INTO CORRESPONDING FIELDS OF TABLE @lt_sndrecs
+    WHERE sndreq = @sndreq_guid.
+    TRY.
+        cl_sndrec_bcs=>display( lt_sndrecs ).
+      CATCH cx_bcs INTO DATA(lx_sndrec). " BCS: General Exceptions
+        MESSAGE lx_sndrec->get_text( ) TYPE 'S'.
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD spool_disp.
+
+    IF spool_no IS NOT INITIAL.
+
+      DATA(lt_id_list) = VALUE sp01r_id_list( ( id = spool_no  sysid = sy-sysid ) ).
+
+      CALL FUNCTION 'RSPO_RID_SPOOLREQ_DISP'
+        EXPORTING
+          id_list = lt_id_list
+        EXCEPTIONS
+          error   = 1
+          OTHERS  = 2.
+      IF sy-subrc <> 0.
+        MESSAGE ID     sy-msgid
+                TYPE   'S'
+                NUMBER sy-msgno
+                WITH   sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
+      ENDIF.
+
+    ENDIF.
+  ENDMETHOD.
 ENDCLASS.
